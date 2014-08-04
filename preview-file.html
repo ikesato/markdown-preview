@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Github Flavored Markdown Preview from local file</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Github Flavored Markdown Preview From Local File</h1>
+
+      <div class="form-group">
+        <label for="label-file" class="control-label">Select Markdown File</label>
+        <input type="file" id="file"></input>
+        <input type="checkbox" id="auto-update" checked>Update Automatically?</input>
+      </div>
+      <label for="label-preview">Preview</label>
+      <hr/>
+      <div id="previewarea"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+
+<script type="text/javascript">
+var file = null;
+var lastFileName;
+var lastModifiedAt;
+var timer = null;
+
+updatePreview = function() {
+  if (file == null) {
+    return;
+  }
+  if (lastFileName == file.name &&
+      lastModifiedAt - file.lastModifiedDate === 0) {
+    return;
+  }
+  lastFileName = file.name;
+  lastModifiedAt = file.lastModifiedDate;
+  var reader = new FileReader();
+  reader.onload = (function(theFile) {
+    return function(e) {
+      refreshPreview(e.target.result, $("#previewarea"));
+    };
+  })(file);
+  reader.readAsText(file);
+}
+
+refreshPreview = function(markdown, target) {
+  $.ajax({
+    type: "POST",
+    url: "https://api.github.com/markdown/raw",
+    contentType: "text/plain",
+    data: markdown,
+    success: function(msg){
+      target.html(msg);
+    }
+  });
+}
+
+$("#file").change(function(evt) {
+  if (evt.target.files.length == 0) {
+    file = null;
+    return;
+  }
+  file = evt.target.files[0];
+  updatePreview();
+});
+
+startStopTimer = function(target) {
+  if (target.is(':checked')) {
+    if (timer == null) {
+      timer = setInterval(updatePreview, 1000);
+    }
+  } else {
+    if (timer != null) {
+        clearInterval(timer);
+        timer = null;
+    }
+  }
+}
+
+
+$("#auto-update").change(function(){
+  startStopTimer($(this));
+});
+
+startStopTimer($("#auto-update"));
+</script>
+</html>
