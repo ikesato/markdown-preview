@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Github Flavor Markdown Preview</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Github Flavor Markdown Preview</h1>
+      <div class="row">
+        <div class="col-md-6">
+          <label for="exampleInputEmail1">Markdown text</label>
+          <textarea class="form-control" id="markdown" rows="30">
+Hello World
+===========
+
+This code is first program of C Language.
+
+```````````````````````````````
+#include <stdio.h>
+int main(int argc, char **argv)
+{
+    printf("hello world\n");
+    return 0;
+}
+```````````````````````````````
+</textarea>
+        </div>
+        <div class="col-md-6">
+          <label for="exampleInputEmail1">Preview</label>
+          <hr/>
+          <div id="previewarea"></div>
+	    </div>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+
+<script type="text/javascript">
+var previous = "";
+var timer = null;
+updatePreview = function() {
+  var markdown = $("#markdown").val();
+  if (previous == markdown) {
+    return;
+  }
+
+  if (timer != null) {
+    clearTimeout(timer);
+  }
+  timer = setTimeout(function() {
+    refreshPreview(markdown, $("#previewarea"));
+    timer = null;
+  }, 1000);
+}
+
+refreshPreview = function(markdown, target) {
+  $.ajax({
+    type: "POST",
+    url: "https://api.github.com/markdown/raw",
+    contentType: "text/plain",
+    data: markdown,
+    success: function(msg){
+      target.html(msg);
+    }
+  });
+}
+
+updatePreview();
+
+$("#markdown").keyup(function(event) {
+  updatePreview();
+});
+</script>
+</html>
