@@ -9,5 +9,4 @@ https://developer.github.com/v3/markdown/
 Demo
 ====
 
-Demo page is:
-markdown-preview/index.html
+Show: index.html
