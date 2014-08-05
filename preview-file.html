@@ -17,6 +17,12 @@
         <input type="file" id="file"></input>
         <input type="checkbox" id="auto-update" checked>Update Automatically?</input>
       </div>
+
+      <div class="form-group">
+        <label for="oauth-token" class="control-label">Via OAuth Tokens</label>
+        <input type="text" id="oauth-token" class="form-control" placeholder="Put Your OAuth Key"></input>
+        <p class="oauth-token">See <a href="https://github.com/blog/1509-personal-api-tokens">Personal API tokens</a></p>
+      </div>
       <label for="label-preview">Preview</label>
       <hr/>
       <div id="previewarea"></div>
@@ -52,9 +58,14 @@ updatePreview = function() {
 }
 
 refreshPreview = function(markdown, target) {
+  var token = $("#oauth-token").val().trim;
+  var url = "https://api.github.com/markdown/raw"
+  if (token.length > 0) {
+    url += "&" + token + ":x-oauth-basic";
+  }
   $.ajax({
     type: "POST",
-    url: "https://api.github.com/markdown/raw",
+    url: url,
     contentType: "text/plain",
     data: markdown,
     success: function(msg){
