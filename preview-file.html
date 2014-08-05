@@ -58,7 +58,7 @@ updatePreview = function() {
 }
 
 refreshPreview = function(markdown, target) {
-  var token = $("#oauth-token").val().trim;
+  var token = $("#oauth-token").val().trim();
   var url = "https://api.github.com/markdown/raw"
   if (token.length > 0) {
     url += "&" + token + ":x-oauth-basic";
